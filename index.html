@@ -39,6 +39,15 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+    }
+
     header {
       background-color: var(--header-bg);
       padding: 24px;
@@ -171,6 +180,9 @@
 </head>
 
 <body>
+  <!-- 粒子背景 -->
+  <div id="particles-js"></div>
+
   <header>
     啟中表白牆
     <button id="toggle-dark">🌙</button>
@@ -196,8 +208,51 @@
     </div>
   </main>
 
-  <footer>Copyright &copy; 版权所有© 啟中表白牆</footer>
+  <footer>
+    Copyright &copy; 版权所有© 啟中表白牆
+  </footer>
 
+  <!-- 1. 粒子背景程式 -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#5B4BEB" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.5 },
+        "size": { "value": 3, "random": true },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#5B4BEB",
+          "opacity": 0.4,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 3,
+          "direction": "none",
+          "out_mode": "out"
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": true, "mode": "grab" },
+          "onclick": { "enable": true, "mode": "push" },
+          "resize": true
+        },
+        "modes": {
+          "grab": { "distance": 140, "line_linked": { "opacity": 1 } },
+          "push": { "particles_nb": 4 }
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
+
+  <!-- 2. 深色模式切換程式 -->
   <script>
     const toggleBtn = document.getElementById('toggle-dark');
     const body = document.body;
@@ -214,7 +269,6 @@
       toggleBtn.textContent = isDark ? '☀️' : '🌙';
     });
 
-    // 自動根據系統預設主題
     if (localStorage.getItem('dark-mode') === null) {
       localStorage.setItem('dark-mode', window.matchMedia('(prefers-color-scheme: dark)').matches);
     }
