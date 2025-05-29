@@ -1,10 +1,31 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>啟中表白牆</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --card-bg: #fff;
+      --header-bg: #5B4BEB;
+      --btn-bg: #5B4BEB;
+      --btn-hover: #3E34C1;
+      --link-color: #5B4BEB;
+    }
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #eee;
+      --card-bg: #1e1e1e;
+      --header-bg: #3E34C1;
+      --btn-bg: #3E34C1;
+      --btn-hover: #5B4BEB;
+      --link-color: #a8a4ff;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -12,19 +33,40 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
+      background-color: var(--bg-color);
       font-family: "Rubik", "Microsoft JhengHei", sans-serif;
-      color: #333;
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     header {
-      background-color: #5B4BEB;
+      background-color: var(--header-bg);
       padding: 24px;
       color: white;
       text-align: center;
       font-size: 24px;
       font-weight: bold;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    #toggle-dark {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #toggle-dark:hover {
+      background-color: white;
+      color: var(--header-bg);
     }
 
     main {
@@ -34,12 +76,18 @@
     }
 
     .card {
-      background-color: white;
+      background-color: var(--card-bg);
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 24px;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
       text-align: center;
+      animation: fadeIn 1s ease-in-out;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
     }
 
     .card img {
@@ -51,12 +99,12 @@
     .card h2 {
       margin: 16px 0 12px;
       font-size: 20px;
-      color: #5B4BEB;
+      color: var(--btn-bg);
     }
 
     .btn-download {
       display: inline-block;
-      background-color: #5B4BEB;
+      background-color: var(--btn-bg);
       color: white;
       padding: 12px 24px;
       border: none;
@@ -64,23 +112,25 @@
       font-size: 16px;
       margin-top: 12px;
       text-decoration: none;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
     .btn-download:hover {
-      background-color: #3E34C1;
+      background-color: var(--btn-hover);
+      transform: scale(1.05);
     }
 
     .section {
-      background-color: white;
+      background-color: var(--card-bg);
       border-radius: 12px;
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      animation: fadeIn 1.2s ease-in-out;
     }
 
     .section h3 {
-      color: #5B4BEB;
+      color: var(--btn-bg);
       margin-bottom: 10px;
     }
 
@@ -98,31 +148,45 @@
     }
 
     a {
-      color: #5B4BEB;
+      color: var(--link-color);
       text-decoration: none;
+      transition: color 0.3s;
     }
 
     a:hover {
       text-decoration: underline;
     }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 
 <body>
-
-  <header>啟中表白牆</header>
+  <header>
+    啟中表白牆
+    <button id="toggle-dark">🌙</button>
+  </header>
 
   <main>
     <div class="card">
       <img src="https://i.imgur.com/AyCvHZ8.png" alt="App Logo">
       <h2>啟中表白牆</h2>
-      <a class="btn-download" href="https://github.com/jjsjshi/ChiWenBiaoBaiQiang/raw/refs/heads/main/%E5%90%AF%E4%B8%AD%E8%A1%A8%E7%99%BD%E5%A2%99_1.9.8.apk" target="_blank">下載 启中表白墙 1.9.8</a>
+      <a class="btn-download" href="https://github.com/jjsjshi/ChiWenBiaoBaiQiang/raw/refs/heads/main/%E5%90%AF%E4%B8%AD%E8%A1%A8%E7%99%BD%E5%A2%99_1.9.8.apk" target="_blank">下載 啟中表白牆 1.9.8</a>
     </div>
 
     <div class="section">
       <h3>關於應用程式</h3>
-      <p>让全体启中学生无时无刻的使用APP来谈论任何事物</p>
-      <p>创始人：Crystal 程序员：Alvin, Crystal</p>
+      <p>讓全體啟中學生無時無刻地使用 APP 來談論任何事物</p>
+      <p>創始人：Crystal　程式員：Alvin, Crystal</p>
     </div>
 
     <div class="section">
@@ -132,7 +196,30 @@
     </div>
   </main>
 
-  <footer>Copyright &copy; 版权所有© 启中表白墙</footer>
+  <footer>Copyright &copy; 版权所有© 啟中表白牆</footer>
 
+  <script>
+    const toggleBtn = document.getElementById('toggle-dark');
+    const body = document.body;
+
+    function applyDarkPreference() {
+      const isDark = localStorage.getItem('dark-mode') === 'true';
+      body.classList.toggle('dark-mode', isDark);
+      toggleBtn.textContent = isDark ? '☀️' : '🌙';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      const isDark = body.classList.toggle('dark-mode');
+      localStorage.setItem('dark-mode', isDark);
+      toggleBtn.textContent = isDark ? '☀️' : '🌙';
+    });
+
+    // 自動根據系統預設主題
+    if (localStorage.getItem('dark-mode') === null) {
+      localStorage.setItem('dark-mode', window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+
+    applyDarkPreference();
+  </script>
 </body>
 </html>
