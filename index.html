@@ -1,135 +1,277 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChiWen 表白墙</title>
+  <title>啟中表白牆</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
-    * {
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --card-bg: #fff;
+      --header-bg: #5B4BEB;
+      --btn-bg: #5B4BEB;
+      --btn-hover: #3E34C1;
+      --link-color: #5B4BEB;
+    }
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #eee;
+      --card-bg: #1e1e1e;
+      --header-bg: #3E34C1;
+      --btn-bg: #3E34C1;
+      --btn-hover: #5B4BEB;
+      --link-color: #a8a4ff;
+    }
+
+    body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      font-family: "Rubik", "Microsoft JhengHei", sans-serif;
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+      overflow-x: hidden;
     }
-    body {
-      min-height: 100vh;
-      background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #fff;
-      padding: 30px;
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
     }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      background: linear-gradient(90deg, #00ffff, #4facfe);
-      -webkit-background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 20px rgba(0,255,255,0.4);
-    }
-    .post-container {
-      width: 90%;
-      max-width: 800px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .glass-card {
-      position: relative;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 20px;
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
-    .glass-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 40px rgba(0, 255, 255, 0.3);
-    }
-    .post-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .author {
-      font-weight: 600;
-      color: #00e0ff;
-    }
-    .pin {
-      background: #00e0ff;
-      color: #000;
-      font-size: 0.8rem;
-      padding: 3px 8px;
-      border-radius: 8px;
+
+    header {
+      background-color: var(--header-bg);
+      padding: 24px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
       font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
-    .content {
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 10px;
+
+    #toggle-dark {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s, color 0.3s;
     }
-    .stats {
-      display: flex;
-      justify-content: flex-end;
-      gap: 15px;
-      font-size: 0.9rem;
+
+    #toggle-dark:hover {
+      background-color: white;
+      color: var(--header-bg);
+    }
+
+    main {
+      max-width: 700px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+    }
+
+    .card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+    }
+
+    .card h2 {
+      margin: 16px 0 12px;
+      font-size: 20px;
+      color: var(--btn-bg);
+    }
+
+    .btn-download {
+      display: inline-block;
+      background-color: var(--btn-bg);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 999px;
+      font-size: 16px;
+      margin-top: 12px;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-download:hover {
+      background-color: var(--btn-hover);
+      transform: scale(1.05);
+    }
+
+    /* 🔹 Liquid Glass 貼文區 */
+    #post-section {
+      margin-top: 60px;
+    }
+
+    .post-card {
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      color: white;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .post-card h4 {
+      margin: 0 0 6px;
+      color: #cfcaff;
+      font-size: 18px;
+    }
+
+    .post-card p {
+      margin: 6px 0 10px;
+      line-height: 1.5;
+    }
+
+    .post-meta {
+      font-size: 14px;
       opacity: 0.8;
     }
-    .button {
-      margin-top: 40px;
-      background: linear-gradient(90deg, #00ffff, #4facfe);
-      border: none;
-      color: #000;
-      font-weight: bold;
-      padding: 12px 30px;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 0 15px rgba(0,255,255,0.5);
+
+    .pinned {
+      border: 1px solid #FFD700;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
     }
-    .button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(0,255,255,0.7);
-    }
+
     .pagination {
-      margin-top: 30px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
+      text-align: center;
+      margin-top: 16px;
     }
-    .page-btn {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff;
-      padding: 8px 14px;
+
+    .pagination button {
+      background-color: var(--btn-bg);
+      color: white;
+      border: none;
       border-radius: 8px;
+      margin: 0 6px;
+      padding: 8px 14px;
       cursor: pointer;
-      backdrop-filter: blur(10px);
+      transition: background 0.3s ease;
     }
-    .page-btn.active {
-      background: #00e0ff;
-      color: #000;
-      font-weight: bold;
+
+    .pagination button:hover {
+      background-color: var(--btn-hover);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
+
 <body>
-  <h1>ChiWen 表白墙</h1>
+  <div id="particles-js"></div>
+  <header>
+    啟中表白牆
+    <button id="toggle-dark">🌙</button>
+  </header>
 
-  <div class="post-container" id="posts"></div>
+  <main>
+    <div class="card">
+      <img src="https://i.imgur.com/AyCvHZ8.png" alt="App Logo">
+      <h2>啟中表白牆</h2>
+      <a class="btn-download" href="https://github.com/jjsjshi/ChiWenBiaoBaiQiang/raw/refs/heads/main/%E5%90%AF%E4%B8%AD%E8%A1%A8%E7%99%BD%E5%A2%99_1.9.9.apk" target="_blank">下載 啟中表白牆 1.9.9</a>
+    </div>
 
-  <div class="pagination" id="pagination"></div>
+    <!-- 🔹 貼文 Liquid Glass 區 -->
+    <div id="post-section">
+      <h3 style="color:var(--btn-bg);text-align:center;">最新貼文</h3>
+      <div id="post-container"></div>
+      <div class="pagination">
+        <button id="prevPage">上一頁</button>
+        <button id="nextPage">下一頁</button>
+      </div>
+    </div>
+  </main>
 
-  <button class="button" id="download">下载最新版本</button>
+  <footer>Copyright &copy; 啟中表白牆</footer>
 
+  <!-- 粒子背景 -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {"value": 80, "density": {"enable": true, "value_area": 800}},
+        "color": {"value": "#5B4BEB"},
+        "shape": {"type": "circle"},
+        "opacity": {"value": 0.5},
+        "size": {"value": 3, "random": true},
+        "line_linked": {"enable": true,"distance":150,"color":"#5B4BEB","opacity":0.4,"width":1},
+        "move": {"enable":true,"speed":3,"direction":"none","out_mode":"out"}
+      },
+      "interactivity": {
+        "events": {"onhover":{"enable":true,"mode":"grab"},"onclick":{"enable":true,"mode":"push"},"resize":true},
+        "modes": {"grab":{"distance":140,"line_linked":{"opacity":1}},"push":{"particles_nb":4}}
+      },
+      "retina_detect": true
+    });
+  </script>
+
+  <!-- 深色模式切換 -->
+  <script>
+    const toggleBtn=document.getElementById('toggle-dark');
+    const body=document.body;
+    function applyDarkPreference(){
+      const isDark=localStorage.getItem('dark-mode')==='true';
+      body.classList.toggle('dark-mode',isDark);
+      toggleBtn.textContent=isDark?'☀️':'🌙';
+    }
+    toggleBtn.addEventListener('click',()=>{
+      const isDark=body.classList.toggle('dark-mode');
+      localStorage.setItem('dark-mode',isDark);
+      toggleBtn.textContent=isDark?'☀️':'🌙';
+    });
+    if(localStorage.getItem('dark-mode')===null){
+      localStorage.setItem('dark-mode',window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    applyDarkPreference();
+  </script>
+
+  <!-- Firebase 貼文讀取 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCTYbT-1JJalcYSJpaGtd1S6gIRW2NIXAc",
@@ -138,84 +280,65 @@
       projectId: "chiwenbbq",
       storageBucket: "chiwenbbq.appspot.com",
       messagingSenderId: "824364962555",
-      appId: "1:824364962555:web:abcdef123456"
+      appId: "1:824364962555:web:demo123456"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const postContainer = document.getElementById("posts");
-    const pagination = document.getElementById("pagination");
-    const postsPerPage = 5;
+
+    const postContainer = document.getElementById("post-container");
+    const perPage = 5;
     let currentPage = 1;
-    let postsData = [];
+    let allPosts = [];
 
     async function fetchPosts() {
-      const dbRef = ref(db);
-      const snapshot = await get(child(dbRef, "posts"));
+      const snapshot = await get(ref(db));
       if (snapshot.exists()) {
-        const posts = snapshot.val();
-        const postArray = Object.values(posts);
-        // sort置顶在前
-        postArray.sort((a,b) => (b.pin === "true") - (a.pin === "true"));
-        postsData = postArray;
-        renderPage(1);
-      } else {
-        postContainer.innerHTML = "<p>暂无贴文</p>";
+        const data = snapshot.val();
+        const posts = data.posts || {};
+        const users = data.users || {};
+
+        const postList = Object.values(posts).map(p => {
+          const user = Object.values(users).find(u => u.uid === p.uid);
+          return {
+            content: p.content,
+            like_count: p.like_count || 0,
+            comment_count: p.comment_count || 0,
+            pinned: p.pin === "true",
+            author: user ? user.name : "匿名"
+          };
+        });
+
+        // 置顶排最前
+        postList.sort((a,b)=> b.pinned - a.pinned);
+        allPosts = postList;
+        renderPosts();
       }
     }
 
-    function renderPage(page) {
-      currentPage = page;
+    function renderPosts() {
       postContainer.innerHTML = "";
-      const start = (page - 1) * postsPerPage;
-      const end = start + postsPerPage;
-      const pagePosts = postsData.slice(start, end);
+      const start = (currentPage - 1) * perPage;
+      const current = allPosts.slice(start, start + perPage);
 
-      pagePosts.forEach(post => {
-        const authorName = getAuthorName(post.uid);
-        const card = document.createElement("div");
-        card.className = "glass-card";
-        card.innerHTML = `
-          <div class="post-header">
-            <span class="author">${authorName}</span>
-            ${post.pin === "true" ? `<span class="pin">置顶</span>` : ""}
-          </div>
-          <div class="content">${post.content}</div>
-          <div class="stats">
-            <span>❤️ ${post.like_count || 0}</span>
-            <span>💬 ${post.comment_count || 0}</span>
-          </div>
+      current.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "post-card" + (p.pinned ? " pinned" : "");
+        div.innerHTML = `
+          <h4>${p.pinned ? "📌 " : ""}${p.author}</h4>
+          <p>${p.content}</p>
+          <div class="post-meta">❤️ ${p.like_count}　💬 ${p.comment_count}</div>
         `;
-        postContainer.appendChild(card);
+        postContainer.appendChild(div);
       });
-
-      renderPagination();
     }
 
-    function renderPagination() {
-      pagination.innerHTML = "";
-      const totalPages = Math.ceil(postsData.length / postsPerPage);
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement("button");
-        btn.className = "page-btn" + (i === currentPage ? " active" : "");
-        btn.textContent = i;
-        btn.onclick = () => renderPage(i);
-        pagination.appendChild(btn);
-      }
-    }
-
-    // 模拟用户昵称查找（可改为实时读取 users 节点）
-    function getAuthorName(uid) {
-      const userMap = {
-        "wHzlhBuFWeREzsygqUipY1hT25r2": "crystal［表白墙墙主］",
-        "BuBtKR94lxWtH25ncyMXV52p4Ru2": "Alvin"
-      };
-      return userMap[uid] || "匿名用户";
-    }
-
-    document.getElementById("download").onclick = () => {
-      window.open("https://github.com/jjsjshi/ChiWenBiaoBaiQiang/raw/refs/heads/main/%E5%90%AF%E4%B8%AD%E8%A1%A8%E7%99%BD%E5%A2%99_1.9.9.apk", "_blank");
-    };
+    document.getElementById("nextPage").addEventListener("click",()=>{
+      if(currentPage*perPage < allPosts.length){currentPage++;renderPosts();}
+    });
+    document.getElementById("prevPage").addEventListener("click",()=>{
+      if(currentPage>1){currentPage--;renderPosts();}
+    });
 
     fetchPosts();
   </script>
