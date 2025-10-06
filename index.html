@@ -1,1 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>啟中表白牆</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      font-family: "Rubik","Microsoft JhengHei",sans-serif;
+      color: #eee;
+      overflow-x: hidden;
+    }
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+    }
+    header {
+      background-color: #3E34C1;
+      padding: 24px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    main {
+      max-width: 700px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .card img {width:80px;height:80px;border-radius:16px;}
+    .card h2 {margin:16px 0 12px;font-size:20px;color:#a8a4ff;}
+    .btn-download {
+      display:inline-block;background-color:#3E34C1;color:white;
+      padding:12px 24px;border:none;border-radius:999px;font-size:16px;
+      margin-top:12px;text-decoration:none;transition:background-color .3s ease,transform .3s ease;
+    }
+    .btn-download:hover {background-color:#5B4BEB;transform:scale(1.05);}
+    #post-section {margin-top:60px;}
+    .post-card {
+      backdrop-filter:blur(12px) saturate(180%);
+      -webkit-backdrop-filter:blur(12px) saturate(180%);
+      background-color:rgba(255,255,255,0.12);
+      border-radius:16px;border:1px solid rgba(255,255,255,0.3);
+      padding:20px;margin-bottom:20px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.25);
+      color:white;transition:transform .3s;
+    }
+    .post-card:hover {transform:scale(1.02);}
+    .post-card h4 {margin:0 0 6px;color:#cfcaff;font-size:18px;}
+    .post-card p {margin:6px 0 10px;line-height:1.5;}
+    .post-meta {font-size:14px;opacity:.8;}
+    .pinned {border:1px solid #FFD700;box-shadow:0 0 12px rgba(255,215,0,0.4);}
+    .pagination {text-align:center;margin-top:16px;}
+    .pagination button {
+      background-color:#3E34C1;color:white;border:none;border-radius:8px;
+      margin:0 6px;padding:8px 14px;cursor:pointer;transition:background .3s ease;
+    }
+    .pagination button:hover {background-color:#5B4BEB;}
+    footer {text-align:center;font-size:12px;color:#888;margin-top:40px;margin-bottom:20px;}
+    .modal {
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.4);
+      display:none;justify-content:center;align-items:center;z-index:10;
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    }
+    .modal-content {
+      background:rgba(30,30,30,0.85);
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:20px;padding:20px;max-width:90%;width:400px;
+      color:white;text-align:left;box-shadow:0 8px 25px rgba(0,0,0,0.4);
+      animation:fadeIn .3s ease;
+    }
+    .modal-content h3 {margin-top:0;color:#cfcaff;}
+    .close-btn {background:none;border:none;color:#fff;float:right;font-size:20px;cursor:pointer;}
+    .comment-item {border-bottom:1px solid rgba(255,255,255,0.2);padding:6px 0;font-size:.9rem;}
+    @keyframes fadeIn {from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <header>啟中表白牆</header>
+  <main>
+    <div class="card">
+      <img src="https://i.imgur.com/AyCvHZ8.png" alt="App Logo">
+      <h2>啟中表白牆</h2>
+      <a class="btn-download" href="https://github.com/jjsjshi/ChiWenBiaoBaiQiang/raw/refs/heads/main/%E5%90%AF%E4%B8%AD%E8%A1%A8%E7%99%BD%E5%A2%99_1.9.9.apk" target="_blank">下載 啟中表白牆 1.9.9</a>
+    </div>
+    <div id="post-section">
+      <h3 style="color:#a8a4ff;text-align:center;">最新貼文</h3>
+      <div id="post-container"></div>
+      <div class="pagination">
+        <button id="prevPage">上一頁</button>
+        <button id="nextPage">下一頁</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="comment-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn">&times;</button>
+      <h3 id="modal-title">貼文評論</h3>
+      <div id="comment-list">載入中...</div>
+    </div>
+  </div>
+
+  <footer>Copyright &copy; 啟中表白牆</footer>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      "particles":{"number":{"value":80},"color":{"value":"#5B4BEB"},
+      "shape":{"type":"circle"},"opacity":{"value":0.5},"size":{"value":3,"random":true},
+      "line_linked":{"enable":true,"distance":150,"color":"#5B4BEB","opacity":0.4,"width":1},
+      "move":{"enable":true,"speed":3}},
+      "interactivity":{"events":{"onhover":{"enable":true,"mode":"grab"},
+      "onclick":{"enable":true,"mode":"push"}}}
+    });
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCTYbT-1JJalcYSJpaGtd1S6gIRW2NIXAc",
+      authDomain: "chiwenbbq.firebaseapp.com",
+      databaseURL: "https://chiwenbbq-default-rtdb.firebaseio.com",
+      projectId: "chiwenbbq",
+      storageBucket: "chiwenbbq.appspot.com",
+      messagingSenderId: "824364962555",
+      appId: "1:824364962555:web:demo123456"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const postContainer = document.getElementById("post-container");
+    const modal = document.getElementById("comment-modal");
+    const modalTitle = document.getElementById("modal-title");
+    const commentList = document.getElementById("comment-list");
+    const closeBtn = document.querySelector(".close-btn");
+
+    let currentPage = 1;
+    const perPage = 5;
+    let allPosts = [];
+
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+    const esc = s => String(s||"").replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+    async function fetchPosts() {
+      const dbRef = ref(db);
+      const [postsSnap, usersSnap] = await Promise.all([
+        get(child(dbRef, "posts")),
+        get(child(dbRef, "users"))
+      ]);
+      const postsObj = postsSnap.exists()?postsSnap.val():{};
+      const usersObj = usersSnap.exists()?usersSnap.val():{};
+      const uidToName = {};
+      Object.values(usersObj).forEach(u => { if(u && u.uid) uidToName[u.uid]=u.name||"匿名"; });
+
+      const postList = Object.entries(postsObj).map(([key,p])=>({
+        key, content:p.content||"", like_count:Number(p.like_count||0),
+        comment_count:Number(p.comment_count||0), pinned:(p.pin==="true"),
+        position:Number(p.position||0), author:uidToName[p.uid]||"匿名"
+      }));
+
+      postList.sort((a,b)=>a.pinned!==b.pinned?(a.pinned?-1:1):(b.position-a.position));
+      allPosts = postList;
+      renderPosts();
+    }
+
+async function fetchComments(postKey) {
+  try {
+    const snap = await get(ref(db, "comments"));
+    if (!snap.exists()) {
+      return `<p class="comment-empty">暂无评论</p>`;
+    }
+    const allComments = Object.values(snap.val());
+    const comments = allComments.filter(c => c.id === postKey);
+    if (comments.length === 0) {
+      return `<p class="comment-empty">暂无评论</p>`;
+    }
+    return comments.map(c => `
+      <div class="comment-item">
+        <b>${esc(c.name || "匿名")}：</b> ${esc(c.comment || "")}
+      </div>`).join("");
+  } catch (err) {
+    console.error("加载评论失败:", err);
+    return `<p class="comment-empty">載入失敗，請稍後重試</p>`;
+  }
+}
+
+    async function openComments(post) {
+      modalTitle.textContent = `${post.author} 的貼文`;
+      commentList.innerHTML = "載入中...";
+      modal.style.display = "flex";
+      const html = await fetchComments(post.key);
+      commentList.innerHTML = html;
+    }
+
+    function renderPosts() {
+      postContainer.innerHTML = "";
+      const start = (currentPage - 1) * perPage;
+      const pagePosts = allPosts.slice(start, start + perPage);
+      pagePosts.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "post-card" + (p.pinned ? " pinned" : "");
+        div.innerHTML = `<h4>${p.pinned ? "📌 " : ""}${esc(p.author)}</h4>
+                         <p>${esc(p.content)}</p>
+                         <div class="post-meta">❤️ ${p.like_count} 💬 ${p.comment_count}</div>`;
+        div.onclick = () => openComments(p);
+        postContainer.appendChild(div);
+      });
+    }
+
+    document.getElementById("nextPage").onclick = () => {
+      if (currentPage * perPage < allPosts.length) { currentPage++; renderPosts(); }
+    };
+    document.getElementById("prevPage").onclick = () => {
+      if (currentPage > 1) { currentPage--; renderPosts(); }
+    };
+
+    fetchPosts();
+  </script>
+</body>
+</html>
+
+
 
