@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>啟中表白牆</title>
+  <title>启中表白牆</title>
   <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
   <style>
     body {
@@ -315,32 +315,25 @@ import {
   equalTo
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-async function fetchComments(postKey, container) {
-  try {
-    const dbRef = ref(db, "comments");
-    const q = query(dbRef, orderByChild("postKey"), equalTo(postKey));
-    const snapshot = await get(q);
-
-    if (!snapshot.exists()) {
-      container.innerHTML = "<p>暂无评论</p>";
-      return;
-    }
-
-    let html = "";
-    snapshot.forEach((child) => {
-      const comment = child.val();
-      html += `
-        <div class="comment">
-          <p><strong>${comment.author || "匿名"}：</strong> ${comment.text}</p>
-        </div>
-      `;
+function fetchComments(postKey, container) {
+  const commentsRef = firebase.database().ref("comments");
+  commentsRef.orderByChild("postKey").equalTo(postKey).once("value")
+    .then(snapshot => {
+      if (!snapshot.exists()) {
+        container.innerHTML = "<p>暂无评论</p>";
+        return;
+      }
+      let html = "";
+      snapshot.forEach(child => {
+        const comment = child.val();
+        html += `<div class="comment"><p>${comment.text}</p></div>`;
+      });
+      container.innerHTML = html;
+    })
+    .catch(err => {
+      container.innerHTML = "<p>加载评论失败</p>";
+      console.error(err);
     });
-
-    container.innerHTML = html;
-  } catch (error) {
-    console.error("读取评论失败：", error);
-    container.innerHTML = "<p style='color:red'>评论加载失败</p>";
-  }
 }
 
 async function openComments(post) {
