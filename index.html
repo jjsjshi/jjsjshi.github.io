@@ -306,7 +306,7 @@
       renderPosts();
     }
 
-import { query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+import { query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 async function fetchComments(postKey, container) {
   const dbRef = ref(db, "comments");
@@ -325,12 +325,11 @@ async function fetchComments(postKey, container) {
 }
 
     async function openComments(post) {
-      modalTitle.textContent = `${post.author} 的貼文`;
-      commentList.innerHTML = "載入中...";
-      modal.style.display = "flex";
-      const html = await fetchComments(post.key);
-      commentList.innerHTML = html;
-    }
+  modalTitle.textContent = `${post.author} 的貼文`;
+  commentList.innerHTML = "載入中...";
+  modal.style.display = "flex";
+  await fetchComments(post.key, commentList);
+}
 
     function renderPosts() {
       postContainer.innerHTML = "";
