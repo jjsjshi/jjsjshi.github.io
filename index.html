@@ -1,180 +1,274 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>启中表白墙</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: radial-gradient(circle at top, #12001e, #000);
-  color: #fff;
-  overflow-x: hidden;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>啟中表白牆</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --card-bg: #fff;
+      --header-bg: #5B4BEB;
+      --btn-bg: #5B4BEB;
+      --btn-hover: #3E34C1;
+      --link-color: #5B4BEB;
+    }
 
-/* 粒子背景 */
-canvas#bg {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  top: 0;
-  left: 0;
-}
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #eee;
+      --card-bg: #1e1e1e;
+      --header-bg: #3E34C1;
+      --btn-bg: #3E34C1;
+      --btn-hover: #5B4BEB;
+      --link-color: #a8a4ff;
+    }
 
-/* 容器 */
-.container {
-  position: relative;
-  z-index: 1;
-  padding: 20px;
-  max-width: 700px;
-  margin: 0 auto;
-}
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      font-family: "Rubik", "Microsoft JhengHei", sans-serif;
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+      overflow-x: hidden;
+    }
 
-/* 分页按钮 */
-.navbar {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-.navbar button {
-  background: rgba(100, 0, 180, 0.5);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: #fff;
-  padding: 10px 18px;
-  margin: 0 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: 0.3s;
-}
-.navbar button.active {
-  background: rgba(170, 0, 255, 0.6);
-}
-.navbar button:hover {
-  transform: scale(1.05);
-}
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+    }
 
-/* Liquid Glass 卡片 */
-.post-card {
-  backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(35, 0, 60, 0.5);
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 16px;
-  margin-bottom: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.post-card:hover {
-  transform: scale(1.02);
-  background-color: rgba(70, 0, 110, 0.55);
-}
-.post-meta {
-  margin-top: 10px;
-  font-size: 0.9em;
-  color: #bbb;
-}
-.post-card h4 {
-  margin: 0;
-  color: #bb86fc;
-}
+    header {
+      background-color: var(--header-bg);
+      padding: 24px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
 
-/* 弹窗评论 */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  backdrop-filter: blur(18px);
-  background-color: rgba(0,0,0,0.7);
-  z-index: 999;
-  align-items: center;
-  justify-content: center;
-}
-.modal-content {
-  background-color: rgba(40,0,70,0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 20px;
-  padding: 20px;
-  width: 90%;
-  max-width: 400px;
-  color: #fff;
-  max-height: 80%;
-  overflow-y: auto;
-}
-.close-btn {
-  float: right;
-  cursor: pointer;
-  font-size: 1.2em;
-  color: #bb86fc;
-}
+    #toggle-dark {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s, color 0.3s;
+    }
 
-/* 评论样式 */
-.comment-item {
-  margin: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  padding-bottom: 6px;
-}
-.comment-item b {
-  color: #c8a2ff;
-}
-.comment-empty {
-  text-align: center;
-  color: #aaa;
-  font-style: italic;
-}
+    #toggle-dark:hover {
+      background-color: white;
+      color: var(--header-bg);
+    }
 
-/* 下载分页 */
-#downloadPage a {
-  display: block;
-  color: #bb86fc;
-  text-align: center;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 14px;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
-  margin: 10px 0;
-  backdrop-filter: blur(8px);
-  background: rgba(35,0,60,0.4);
-}
-#downloadPage a:hover {
-  background: rgba(100,0,180,0.6);
-}
-</style>
+    main {
+      max-width: 700px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+    }
+
+    .card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+    }
+
+    .card h2 {
+      margin: 16px 0 12px;
+      font-size: 20px;
+      color: var(--btn-bg);
+    }
+
+    .btn-download {
+      display: inline-block;
+      background-color: var(--btn-bg);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 999px;
+      font-size: 16px;
+      margin-top: 12px;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-download:hover {
+      background-color: var(--btn-hover);
+      transform: scale(1.05);
+    }
+
+    /* 🔹 Liquid Glass 貼文區 */
+    #post-section {
+      margin-top: 60px;
+    }
+
+    .post-card {
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      color: white;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .post-card h4 {
+      margin: 0 0 6px;
+      color: #cfcaff;
+      font-size: 18px;
+    }
+
+    .post-card p {
+      margin: 6px 0 10px;
+      line-height: 1.5;
+    }
+
+    .post-meta {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .pinned {
+      border: 1px solid #FFD700;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+    }
+
+    .pagination {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .pagination button {
+      background-color: var(--btn-bg);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin: 0 6px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .pagination button:hover {
+      background-color: var(--btn-hover);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
+
 <body>
-<canvas id="bg"></canvas>
+  <div id="particles-js"></div>
+  <header>
+    啟中表白牆
+    <button id="toggle-dark">🌙</button>
+  </header>
 
-<div class="container">
-  <div class="navbar">
-    <button id="btnPosts" class="active">貼文</button>
-    <button id="btnDownload">下載</button>
-  </div>
+  <main>
+    <div class="card">
+      <img src="https://i.imgur.com/AyCvHZ8.png" alt="App Logo">
+      <h2>啟中表白牆</h2>
+      <a class="btn-download" href="https://github.com/jjsjshi/ChiWenBiaoBaiQiang/raw/refs/heads/main/%E5%90%AF%E4%B8%AD%E8%A1%A8%E7%99%BD%E5%A2%99_1.9.9.apk" target="_blank">下載 啟中表白牆 1.9.9</a>
+    </div>
 
-  <div id="postsPage">
-    <div id="postContainer"></div>
-  </div>
+    <!-- 🔹 貼文 Liquid Glass 區 -->
+    <div id="post-section">
+      <h3 style="color:var(--btn-bg);text-align:center;">最新貼文</h3>
+      <div id="post-container"></div>
+      <div class="pagination">
+        <button id="prevPage">上一頁</button>
+        <button id="nextPage">下一頁</button>
+      </div>
+    </div>
+  </main>
 
-  <div id="downloadPage" style="display:none;">
-    <a href="https://github.com/jjsjshi/ChiWenBiaoBaiQiang/raw/refs/heads/main/%E5%90%AF%E4%B8%AD%E8%A1%A8%E7%99%BD%E5%A2%99_1.9.9.apk">⬇️ 下載最新版本</a>
-  </div>
-</div>
+  <footer>Copyright &copy; 啟中表白牆</footer>
 
-<!-- 评论弹窗 -->
-<div class="modal" id="commentModal">
-  <div class="modal-content">
-    <span class="close-btn" id="closeModal">&times;</span>
-    <h3 id="modalTitle"></h3>
-    <div id="commentList"></div>
-  </div>
-</div>
+  <!-- 粒子背景 -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {"value": 80, "density": {"enable": true, "value_area": 800}},
+        "color": {"value": "#5B4BEB"},
+        "shape": {"type": "circle"},
+        "opacity": {"value": 0.5},
+        "size": {"value": 3, "random": true},
+        "line_linked": {"enable": true,"distance":150,"color":"#5B4BEB","opacity":0.4,"width":1},
+        "move": {"enable":true,"speed":3,"direction":"none","out_mode":"out"}
+      },
+      "interactivity": {
+        "events": {"onhover":{"enable":true,"mode":"grab"},"onclick":{"enable":true,"mode":"push"},"resize":true},
+        "modes": {"grab":{"distance":140,"line_linked":{"opacity":1}},"push":{"particles_nb":4}}
+      },
+      "retina_detect": true
+    });
+  </script>
 
-<!-- Firebase -->
+  <!-- 深色模式切換 -->
+  <script>
+    const toggleBtn=document.getElementById('toggle-dark');
+    const body=document.body;
+    function applyDarkPreference(){
+      const isDark=localStorage.getItem('dark-mode')==='true';
+      body.classList.toggle('dark-mode',isDark);
+      toggleBtn.textContent=isDark?'☀️':'🌙';
+    }
+    toggleBtn.addEventListener('click',()=>{
+      const isDark=body.classList.toggle('dark-mode');
+      localStorage.setItem('dark-mode',isDark);
+      toggleBtn.textContent=isDark?'☀️':'🌙';
+    });
+    if(localStorage.getItem('dark-mode')===null){
+      localStorage.setItem('dark-mode',window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    applyDarkPreference();
+  </script>
+
+  <!-- Firebase 貼文讀取 -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
@@ -183,94 +277,108 @@ canvas#bg {
     apiKey: "AIzaSyCTYbT-1JJalcYSJpaGtd1S6gIRW2NIXAc",
     authDomain: "chiwenbbq.firebaseapp.com",
     databaseURL: "https://chiwenbbq-default-rtdb.firebaseio.com",
-    projectId: "824364962555",
+    projectId: "chiwenbbq",
     storageBucket: "chiwenbbq.appspot.com",
     messagingSenderId: "824364962555",
-    appId: "1:824364962555:web:example"
+    appId: "1:824364962555:web:demo123456"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const postContainer = document.getElementById("postContainer");
+
+  const postContainer = document.getElementById("post-container");
+  const perPage = 5;
+  let currentPage = 1;
+  let allPosts = [];
+
+  function esc(s) {
+    return String(s || "").replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   async function fetchPosts() {
-    const snap = await get(child(ref(db), "posts"));
-    const userSnap = await get(child(ref(db), "users"));
-    if (!snap.exists()) return;
+    try {
+      const dbRef = ref(db);
+      const [postsSnap, usersSnap] = await Promise.all([
+        get(child(dbRef, "posts")),
+        get(child(dbRef, "users"))
+      ]);
 
-    const users = userSnap.exists() ? userSnap.val() : {};
-    const posts = Object.values(snap.val()).sort((a, b) => (b.pin === "true") - (a.pin === "true"));
+      const postsObj = postsSnap.exists() ? postsSnap.val() : {};
+      const usersObj = usersSnap.exists() ? usersSnap.val() : {};
+
+      const uidToName = {};
+      Object.values(usersObj).forEach(u => {
+        if (u && u.uid) uidToName[u.uid] = u.name || "匿名";
+      });
+
+      const postList = Object.values(postsObj).map(p => ({
+        content: p.content || "",
+        like_count: Number(p.like_count || 0),
+        comment_count: Number(p.comment_count || 0),
+        pinned: (p.pin === "true"),
+        position: Number(p.position || 0),
+        author: uidToName[p.uid] || "匿名"
+      }));
+
+      postList.sort((a, b) => {
+        if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+        return (b.position - a.position);
+      });
+
+      allPosts = postList;
+      currentPage = 1;
+      renderPosts();
+    } catch (err) {
+      console.error("fetchPosts error:", err);
+      postContainer.innerHTML = `<p style="color: red;">貼文載入失敗</p>`;
+    }
+  }
+
+  function renderPosts() {
     postContainer.innerHTML = "";
+    const start = (currentPage - 1) * perPage;
+    const pagePosts = allPosts.slice(start, start + perPage);
 
-    posts.forEach(post => {
-      const user = Object.values(users).find(u => u.uid === post.uid);
-      const author = user ? user.name : "匿名";
+    if (pagePosts.length === 0) {
+      postContainer.innerHTML = "<p>暫無貼文</p>";
+      return;
+    }
+
+    pagePosts.forEach(p => {
       const div = document.createElement("div");
-      div.className = "post-card";
+      div.className = "post-card" + (p.pinned ? " pinned" : "");
       div.innerHTML = `
-        <h4>${post.pin === "true" ? "📌 " : ""}${author}</h4>
-        <p>${post.content}</p>
-        <div class="post-meta">❤️ ${post.like_count || 0}　💬 ${post.comment_count || 0}</div>
+        <h4>${p.pinned ? "📌 " : ""}${esc(p.author)}</h4>
+        <p>${esc(p.content)}</p>
+        <div class="post-meta">❤️ ${esc(p.like_count)}  💬 ${esc(p.comment_count)}</div>
       `;
-      div.addEventListener("click", () => openCommentModal(post, author));
       postContainer.appendChild(div);
     });
   }
 
-  async function openCommentModal(post, author) {
-    const modal = document.getElementById("commentModal");
-    const commentList = document.getElementById("commentList");
-    document.getElementById("modalTitle").textContent = `${author} 的貼文`;
-    modal.style.display = "flex";
-    commentList.innerHTML = "<p>載入中...</p>";
-
-    const commentSnap = await get(child(ref(db), `comments/${post.childkey}`));
-    if (!commentSnap.exists()) {
-      commentList.innerHTML = `<p class="comment-empty">暫無評論</p>`;
-      return;
+  document.getElementById("nextPage").addEventListener("click", () => {
+    if (currentPage * perPage < allPosts.length) {
+      currentPage++;
+      renderPosts();
     }
-    const comments = Object.values(commentSnap.val());
-    commentList.innerHTML = comments.map(c =>
-      `<div class="comment-item"><b>${c.name || "匿名"}：</b>${c.text || ""}</div>`
-    ).join("");
-  }
-
-  document.getElementById("closeModal").addEventListener("click", () => {
-    document.getElementById("commentModal").style.display = "none";
+  });
+  document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderPosts();
+    }
   });
 
   fetchPosts();
-
-  // 分页切换
-  const btnPosts = document.getElementById("btnPosts");
-  const btnDownload = document.getElementById("btnDownload");
-  btnPosts.onclick = () => {
-    btnPosts.classList.add("active");
-    btnDownload.classList.remove("active");
-    document.getElementById("postsPage").style.display = "block";
-    document.getElementById("downloadPage").style.display = "none";
-  };
-  btnDownload.onclick = () => {
-    btnDownload.classList.add("active");
-    btnPosts.classList.remove("active");
-    document.getElementById("postsPage").style.display = "none";
-    document.getElementById("downloadPage").style.display = "block";
-  };
 </script>
-
-<!-- 粒子背景 -->
-<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
-<script>
-particlesJS("bg", {
-  "particles": {
-    "number": {"value": 70},
-    "color": {"value": "#bb86fc"},
-    "shape": {"type": "circle"},
-    "opacity": {"value": 0.5},
-    "size": {"value": 2},
-    "move": {"enable": true, "speed": 1.5}
-  }
-});
-</script>
+  <script>
+  console.log = (...args) => {
+    alert(args.join(" "));
+  };
+  </script>
 </body>
 </html>
+
+
