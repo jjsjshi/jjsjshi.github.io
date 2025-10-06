@@ -306,28 +306,49 @@
       renderPosts();
     }
 
-import { query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import {
+  getDatabase,
+  ref,
+  get,
+  query,
+  orderByChild,
+  equalTo
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 async function fetchComments(postKey, container) {
-  const dbRef = ref(db, "comments");
-  const q = query(dbRef, orderByChild("id"), equalTo(postKey));
-  const snap = await get(q);
-  if (!snap.exists()) {
-    container.innerHTML = `<p class="comment-empty">暂无评论</p>`;
-    return;
+  try {
+    const dbRef = ref(db, "comments");
+    const q = query(dbRef, orderByChild("postKey"), equalTo(postKey));
+    const snapshot = await get(q);
+
+    if (!snapshot.exists()) {
+      container.innerHTML = "<p>暂无评论</p>";
+      return;
+    }
+
+    let html = "";
+    snapshot.forEach((child) => {
+      const comment = child.val();
+      html += `
+        <div class="comment">
+          <p><strong>${comment.author || "匿名"}：</strong> ${comment.text}</p>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  } catch (error) {
+    console.error("读取评论失败：", error);
+    container.innerHTML = "<p style='color:red'>评论加载失败</p>";
   }
-  const comments = Object.values(snap.val());
-  container.innerHTML = comments.map(c => `
-    <div class="comment-item">
-      <b>${esc(c.name || "匿名")}：</b> ${esc(c.comment || "")}
-    </div>
-  `).join("");
 }
 
-    async function openComments(post) {
-  modalTitle.textContent = `${post.author} 的貼文`;
-  commentList.innerHTML = "載入中...";
+async function openComments(post) {
+  modalTitle.textContent = `${post.author} 的贴文`;
+  commentList.innerHTML = "载入中...";
   modal.style.display = "flex";
+
+  // 调用并等待 fetchComments 填充内容
   await fetchComments(post.key, commentList);
 }
 
