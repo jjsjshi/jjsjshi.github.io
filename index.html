@@ -269,79 +269,110 @@
   </script>
 
   <!-- Firebase 貼文讀取 -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCTYbT-1JJalcYSJpaGtd1S6gIRW2NIXAc",
-      authDomain: "chiwenbbq.firebaseapp.com",
-      databaseURL: "https://chiwenbbq-default-rtdb.firebaseio.com",
-      projectId: "chiwenbbq",
-      storageBucket: "chiwenbbq.appspot.com",
-      messagingSenderId: "824364962555",
-      appId: "1:824364962555:web:demo123456"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCTYbT-1JJalcYSJpaGtd1S6gIRW2NIXAc",
+    authDomain: "chiwenbbq.firebaseapp.com",
+    databaseURL: "https://chiwenbbq-default-rtdb.firebaseio.com",
+    projectId: "chiwenbbq",
+    storageBucket: "chiwenbbq.appspot.com",
+    messagingSenderId: "824364962555",
+    appId: "1:824364962555:web:demo123456"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    const postContainer = document.getElementById("post-container");
-    const perPage = 5;
-    let currentPage = 1;
-    let allPosts = [];
+  const postContainer = document.getElementById("post-container");
+  const perPage = 5;
+  let currentPage = 1;
+  let allPosts = [];
 
-    async function fetchPosts() {
-      const snapshot = await get(ref(db));
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const posts = data.posts || {};
-        const users = data.users || {};
+  function esc(s) {
+    return String(s || "").replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
-        const postList = Object.values(posts).map(p => {
-          const user = Object.values(users).find(u => u.uid === p.uid);
-          return {
-            content: p.content,
-            like_count: p.like_count || 0,
-            comment_count: p.comment_count || 0,
-            pinned: p.pin === "true",
-            author: user ? user.name : "匿名"
-          };
-        });
+  async function fetchPosts() {
+    try {
+      const dbRef = ref(db);
+      const [postsSnap, usersSnap] = await Promise.all([
+        get(child(dbRef, "posts")),
+        get(child(dbRef, "users"))
+      ]);
 
-        // 置顶排最前
-        postList.sort((a,b)=> b.pinned - a.pinned);
-        allPosts = postList;
-        renderPosts();
-      }
-    }
+      const postsObj = postsSnap.exists() ? postsSnap.val() : {};
+      const usersObj = usersSnap.exists() ? usersSnap.val() : {};
 
-    function renderPosts() {
-      postContainer.innerHTML = "";
-      const start = (currentPage - 1) * perPage;
-      const current = allPosts.slice(start, start + perPage);
-
-      current.forEach(p => {
-        const div = document.createElement("div");
-        div.className = "post-card" + (p.pinned ? " pinned" : "");
-        div.innerHTML = `
-          <h4>${p.pinned ? "📌 " : ""}${p.author}</h4>
-          <p>${p.content}</p>
-          <div class="post-meta">❤️ ${p.like_count}　💬 ${p.comment_count}</div>
-        `;
-        postContainer.appendChild(div);
+      const uidToName = {};
+      Object.values(usersObj).forEach(u => {
+        if (u && u.uid) uidToName[u.uid] = u.name || "匿名";
       });
+
+      const postList = Object.values(postsObj).map(p => ({
+        content: p.content || "",
+        like_count: Number(p.like_count || 0),
+        comment_count: Number(p.comment_count || 0),
+        pinned: (p.pin === "true"),
+        position: Number(p.position || 0),
+        author: uidToName[p.uid] || "匿名"
+      }));
+
+      postList.sort((a, b) => {
+        if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+        return (b.position - a.position);
+      });
+
+      allPosts = postList;
+      currentPage = 1;
+      renderPosts();
+    } catch (err) {
+      console.error("fetchPosts error:", err);
+      postContainer.innerHTML = `<p style="color: red;">貼文載入失敗</p>`;
+    }
+  }
+
+  function renderPosts() {
+    postContainer.innerHTML = "";
+    const start = (currentPage - 1) * perPage;
+    const pagePosts = allPosts.slice(start, start + perPage);
+
+    if (pagePosts.length === 0) {
+      postContainer.innerHTML = "<p>暫無貼文</p>";
+      return;
     }
 
-    document.getElementById("nextPage").addEventListener("click",()=>{
-      if(currentPage*perPage < allPosts.length){currentPage++;renderPosts();}
+    pagePosts.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "post-card" + (p.pinned ? " pinned" : "");
+      div.innerHTML = `
+        <h4>${p.pinned ? "📌 " : ""}${esc(p.author)}</h4>
+        <p>${esc(p.content)}</p>
+        <div class="post-meta">❤️ ${esc(p.like_count)}  💬 ${esc(p.comment_count)}</div>
+      `;
+      postContainer.appendChild(div);
     });
-    document.getElementById("prevPage").addEventListener("click",()=>{
-      if(currentPage>1){currentPage--;renderPosts();}
-    });
+  }
 
-    fetchPosts();
-  </script>
+  document.getElementById("nextPage").addEventListener("click", () => {
+    if (currentPage * perPage < allPosts.length) {
+      currentPage++;
+      renderPosts();
+    }
+  });
+  document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderPosts();
+    }
+  });
+
+  fetchPosts();
+</script>
   <script>
   console.log = (...args) => {
     alert(args.join(" "));
@@ -349,4 +380,5 @@
   </script>
 </body>
 </html>
+
 
