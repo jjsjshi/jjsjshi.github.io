@@ -306,12 +306,23 @@
       renderPosts();
     }
 
-    async function fetchComments(postKey) {
-      const snap = await get(child(ref(db), `comments/${postKey}`));
-      if (!snap.exists()) return "<p>暫無評論</p>";
-      const comments = Object.values(snap.val());
-      return comments.map(c => `<div class="comment-item"><b>${esc(c.name||"匿名")}：</b>${esc(c.text||"")}</div>`).join("");
-    }
+import { query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+async function fetchComments(postKey, container) {
+  const dbRef = ref(db, "comments");
+  const q = query(dbRef, orderByChild("id"), equalTo(postKey));
+  const snap = await get(q);
+  if (!snap.exists()) {
+    container.innerHTML = `<p class="comment-empty">暂无评论</p>`;
+    return;
+  }
+  const comments = Object.values(snap.val());
+  container.innerHTML = comments.map(c => `
+    <div class="comment-item">
+      <b>${esc(c.name || "匿名")}：</b> ${esc(c.comment || "")}
+    </div>
+  `).join("");
+}
 
     async function openComments(post) {
       modalTitle.textContent = `${post.author} 的貼文`;
